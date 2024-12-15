@@ -2,6 +2,7 @@
 using Inventory_Management.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Dynamic.Core;
+using static Inventory_Management.Models.DatabaseModel;
 namespace Inventory_Management.Controllers
 {
     [ApiController]
@@ -64,6 +65,25 @@ namespace Inventory_Management.Controllers
             }
         }
 
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create(Product input)
+        {
+            await _productService.Create(input);
+            return Ok();
+        }
 
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update(Product input)
+        {
+            await _productService.Update(input);
+            return Ok();
+        }
+
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _productService.Delete(id);
+            return Ok();
+        }
     }
 }

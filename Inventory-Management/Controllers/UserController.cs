@@ -6,47 +6,47 @@ using static Inventory_Management.Models.DatabaseModel;
 namespace Inventory_Management.Controllers
 {
     [AllowAnonymous]
-    public class CategoryController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly ICategoryService _categoryService;
+        private readonly IUserService _userService;
 
-        public CategoryController(ICategoryService categoryService)
+        public UserController(IUserService userService)
         {
-            _categoryService = categoryService;
+            _userService = userService;
         }
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var data = await _categoryService.GetAll();
+            var data = await _userService.GetAll();
             return Ok(data);
         }
 
         [HttpGet("GetById")]
         public async Task<IActionResult> GetById(int id)
         {
-            var data = await _categoryService.GetById(id);
+            var data = await _userService.GetById(id);
             return Ok(data);
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(Category input)
+        public async Task<IActionResult> Create(User input)
         {
-            await _categoryService.Create(input);
+            await _userService.Create(input);
             return Ok();
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(Category input)
+        public async Task<IActionResult> Update(User input)
         {
-            await _categoryService.Update(input);
+            await _userService.Update(input);
             return Ok();
         }
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _categoryService.Delete(id);
+            await _userService.Delete(id);
             return Ok();
         }
     }
