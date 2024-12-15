@@ -1,19 +1,20 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Inventory_Management.Data;
-using Microsoft.OpenApi.Models;
-using Inventory_Management.Handler;
-using Inventory_Management.Services;
 using Inventory_Management.Repositories;
+using Inventory_Management.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 IConfiguration configuration = builder.Configuration;
 
-
-builder.Services.AddScoped<IProductService, ProductRepository>();
+builder.Services.AddScoped<IUserService, UserRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryRepository>();
+builder.Services.AddScoped<IProductService, ProductRepository>();
+builder.Services.AddScoped<IProductCategoryService, ProductCategoryRepository>();
+builder.Services.AddScoped<IAuditLogService, AuditLogRepository>();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Central Server API", Version = "v1" });
@@ -24,13 +25,13 @@ builder.Services.AddSwaggerGen(c =>
 //Local
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    
 
-        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), sqlOptions =>
-        {
-            sqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null);
-        });
-    
+
+    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null);
+    });
+
 }, ServiceLifetime.Scoped);
 
 #endregion

@@ -5,48 +5,48 @@ using static Inventory_Management.Models.DatabaseModel;
 
 namespace Inventory_Management.Repositories
 {
-    public class CategoryRepository : ICategoryService
+    public class AuditLogRepository : IAuditLogService
     {
         private readonly ApplicationDbContext _db;
 
-        public CategoryRepository(ApplicationDbContext context)
+        public AuditLogRepository(ApplicationDbContext context)
         {
             _db = context;
         }
 
-        public async Task Create(Category input)
+        public async Task Create(AuditLog input)
         {
-            _db.Categories.Add(input);
+            _db.AuditLogs.Add(input);
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<Category>> GetAll()
+        public async Task<List<AuditLog>> GetAll()
         {
-            return await _db.Categories.ToListAsync();
+            return await _db.AuditLogs.ToListAsync();
         }
 
-        public async Task<Category> GetById(long id)
+        public async Task<AuditLog> GetById(int id)
         {
-            return await _db.Categories
-                .Where(c => c.Id == id)
+            return await _db.AuditLogs
+                .Where(i => i.Id == id)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task Delete(long id)
+        public async Task Delete(int id)
         {
-            Category data = await GetById(id);
+            AuditLog data = await GetById(id);
             if (data != null)
             {
-                _db.Categories.Remove(data);
+                _db.AuditLogs.Remove(data);
                 await _db.SaveChangesAsync();
             }
         }
 
-        public async Task Update(Category input)
+        public async Task Update(AuditLog input)
         {
             if (input != null)
             {
-                _db.Categories.Update(input);
+                _db.AuditLogs.Update(input);
                 await _db.SaveChangesAsync();
             }
         }

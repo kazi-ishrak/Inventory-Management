@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using static Inventory_Management.Models.DatabaseModel;
-
-namespace Inventory_Management.Models
+﻿namespace Inventory_Management.Models
 {
     public class ProductCategoryDTO
     {
