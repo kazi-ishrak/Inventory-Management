@@ -6,6 +6,6 @@ namespace Inventory_Management.Services
     public interface ICategoryService
     {
         public Task<List<Category>> GetAll();
-
+        public Task<Category> GetById(long Id);
     }
 }

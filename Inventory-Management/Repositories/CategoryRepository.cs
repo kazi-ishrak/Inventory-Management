@@ -24,5 +24,19 @@ namespace Inventory_Management.Repositories
                 return null;
             }
         }
+
+        public async Task<Category> GetById(long Id)
+        {
+            try
+            {
+                var Query = await _db.Categories.Where(x => x.Id == Id).FirstOrDefaultAsync();
+                return Query;
+            }
+            catch (Exception ex)
+            {
+                LogHandler.WriteErrorLog(ex);
+                return null;
+            }
+        }
     }
 }
