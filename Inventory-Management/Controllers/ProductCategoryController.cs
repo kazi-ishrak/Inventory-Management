@@ -6,47 +6,47 @@ namespace Inventory_Management.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CategoryController : ControllerBase
+    public class ProductCategoryController : ControllerBase
     {
-        private readonly ICategoryService _categoryService;
+        private readonly IProductCategoryService _productCategoryService;
 
-        public CategoryController(ICategoryService categoryService)
+        public ProductCategoryController(IProductCategoryService productCategoryService)
         {
-            _categoryService = categoryService;
+            _productCategoryService = productCategoryService;
         }
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var data = await _categoryService.GetAll();
+            var data = await _productCategoryService.GetAll();
             return Ok(data);
         }
 
         [HttpGet("GetById")]
         public async Task<IActionResult> GetById(int id)
         {
-            var data = await _categoryService.GetById(id);
+            var data = await _productCategoryService.GetById(id);
             return Ok(data);
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(Category input)
+        public async Task<IActionResult> Create(ProductCategory input)
         {
-            await _categoryService.Create(input);
+            await _productCategoryService.Create(input);
             return Ok();
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(Category input)
+        public async Task<IActionResult> Update(ProductCategory input)
         {
-            await _categoryService.Update(input);
+            await _productCategoryService.Update(input);
             return Ok();
         }
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _categoryService.Delete(id);
+            await _productCategoryService.Delete(id);
             return Ok();
         }
     }

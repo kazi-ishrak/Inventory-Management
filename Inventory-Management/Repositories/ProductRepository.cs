@@ -1,87 +1,54 @@
 ﻿using Inventory_Management.Data;
-using Inventory_Management.Models;
 using Inventory_Management.Services;
-using static Inventory_Management.Models.DatabaseModel;
 using Microsoft.EntityFrameworkCore;
-using Inventory_Management.Handler;
-
+using static Inventory_Management.Models.DatabaseModel;
 
 namespace Inventory_Management.Repositories
 {
     public class ProductRepository : IProductService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
 
         public ProductRepository(ApplicationDbContext context)
         {
-            _context = context;
+            _db = context;
         }
 
-        public async Task<List<Product>?> GetAll()
+        public async Task Create(Product input)
         {
-            try
-            {
-                var query = await _context.Products.ToListAsync();
-                /*var query = await _context.Products
-                    .Select(p => new ProductCategoryDTO
-                    {
-                        ProductID = p.Id,
-                        ProductName = p.Name,
-                        SKU = p.Sku,
-                        Stock = p.Stock,
-                        Price = p.Price,
-                        ProductCreated = p.Created_at,
-                        ProductUpdated = p.Updated_at,
-                        Categories = p.ProductCategories
-                            .OrderBy(pc => pc.Category.Name)
-                            .Select(pc => pc.Category.Name)
-                            .Aggregate((c1, c2) => c1 + ", " + c2)
-                    })
-                    .ToListAsync();*/
+            _db.Products.Add(input);
+            await _db.SaveChangesAsync();
+        }
 
-                return query;
-            }
-            catch (Exception ex)
+        public async Task<List<Product>> GetAll()
+        {
+            return await _db.Products.ToListAsync();
+        }
+
+        public async Task<Product> GetById(long id)
+        {
+            return await _db.Products
+                .Where(p => p.Id == id)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task Delete(long id)
+        {
+            Product data = await GetById(id);
+            if (data != null)
             {
-                LogHandler.WriteErrorLog(ex);
-                return null;
+                _db.Products.Remove(data);
+                await _db.SaveChangesAsync();
             }
         }
 
-        public async Task<Product> GetById(long Id)
+        public async Task Update(Product input)
         {
-            try
+            if (input != null)
             {
-                var query = await _context.Products.Where(x=> x.Id==Id).FirstOrDefaultAsync();
-                /*var query = await _context.Products
-                    .Select(p => new ProductCategoryDTO
-                    {
-                        ProductID = p.Id,
-                        ProductName = p.Name,
-                        SKU = p.Sku,
-                        Stock = p.Stock,
-                        Price = p.Price,
-                        ProductCreated = p.Created_at,
-                        ProductUpdated = p.Updated_at,
-                        Categories = p.ProductCategories
-                            .OrderBy(pc => pc.Category.Name)
-                            .Select(pc => pc.Category.Name)
-                            .Aggregate((c1, c2) => c1 + ", " + c2)
-                    })
-                    .ToListAsync();*/
-                return query;
+                _db.Products.Update(input);
+                await _db.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                LogHandler.WriteErrorLog(ex);
-                return null;
-            }
-        }
-
-
-        public async Task Update(Product Input)
-        {
-            
         }
     }
 }

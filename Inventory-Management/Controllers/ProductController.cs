@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Inventory_Management.Handler;
-using static Inventory_Management.Models.DatabaseModel;
+﻿using Inventory_Management.Handler;
 using Inventory_Management.Services;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq.Dynamic.Core;
+using static Inventory_Management.Models.DatabaseModel;
 namespace Inventory_Management.Controllers
 {
     [ApiController]
@@ -32,7 +32,7 @@ namespace Inventory_Management.Controllers
 
             if (!string.IsNullOrEmpty(search))
             {
-                data = data.Where(x => 
+                data = data.Where(x =>
                 (x.Name != null && x.Name.ToLower().Contains(search.ToLower())) ||
                 (x.Sku != null && x.Sku.ToLower().Contains(search.ToLower()))
                 ).ToList();
@@ -65,6 +65,25 @@ namespace Inventory_Management.Controllers
             }
         }
 
-        
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create(Product input)
+        {
+            await _productService.Create(input);
+            return Ok();
+        }
+
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update(Product input)
+        {
+            await _productService.Update(input);
+            return Ok();
+        }
+
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _productService.Delete(id);
+            return Ok();
+        }
     }
 }
