@@ -1,11 +1,11 @@
 ﻿using Inventory_Management.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Inventory_Management.Models.DatabaseModel;
 
 namespace Inventory_Management.Controllers
 {
-    [AllowAnonymous]
+    [ApiController]
+    [Route("[controller]")]
     public class ProductCategoryController : ControllerBase
     {
         private readonly IProductCategoryService _productCategoryService;

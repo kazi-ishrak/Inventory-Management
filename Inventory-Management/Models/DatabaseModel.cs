@@ -72,12 +72,12 @@ namespace Inventory_Management.Models
             [Required]
 
             [Column("product_id")]
-            public string ProductId { get; set; } // Product Name
+            public long ProductId { get; set; } // Product Name
 
 
             [Required]
             [Column("category_id")]
-            public DateTime CategoryId { get; set; } // Timestamp for the last update
+            public long CategoryId { get; set; } // Timestamp for the last update
         }
 
         [Table("users")]
