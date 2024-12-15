@@ -1,7 +1,8 @@
-﻿using Inventory_Management.Handler;
-using Inventory_Management.Services;
+﻿using Inventory_Management.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Dynamic.Core;
+using static Inventory_Management.Models.DatabaseModel;
+
 namespace Inventory_Management.Controllers
 {
     [ApiController]
@@ -9,6 +10,7 @@ namespace Inventory_Management.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
+
         public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
@@ -49,19 +51,32 @@ namespace Inventory_Management.Controllers
             
         }
 
-        [HttpGet("GetById/{Id}")]
-        public async Task<IActionResult> GetById(long Id)
+        [HttpGet("GetById")]
+        public async Task<IActionResult> GetById(int id)
         {
-            try
-            {
-                var Data = await _categoryService.GetById(Id);
-                return Ok(Data);
-            }
-            catch (Exception ex)
-            {
-                LogHandler.WriteErrorLog(ex);
-                return NoContent();
-            }
+            var data = await _categoryService.GetById(id);
+            return Ok(data);
+        }
+
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create(Category input)
+        {
+            await _categoryService.Create(input);
+            return Ok();
+        }
+
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update(Category input)
+        {
+            await _categoryService.Update(input);
+            return Ok();
+        }
+
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _categoryService.Delete(id);
+            return Ok();
         }
     }
 }

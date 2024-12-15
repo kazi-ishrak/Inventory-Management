@@ -5,48 +5,48 @@ using static Inventory_Management.Models.DatabaseModel;
 
 namespace Inventory_Management.Repositories
 {
-    public class ProductCategoryRepository : IProductCategoryService
+    public class UserRepository : IUserService
     {
         private readonly ApplicationDbContext _db;
 
-        public ProductCategoryRepository(ApplicationDbContext context)
+        public UserRepository(ApplicationDbContext context)
         {
             _db = context;
         }
 
-        public async Task Create(ProductCategory input)
+        public async Task Create(User input)
         {
-            _db.ProductCategories.Add(input);
+            _db.Users.Add(input);
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<ProductCategory>> GetAll()
+        public async Task<List<User>> GetAll()
         {
-            return await _db.ProductCategories.ToListAsync();
+            return await _db.Users.ToListAsync();
         }
 
-        public async Task<ProductCategory> GetById(long id)
+        public async Task<User> GetById(long id)
         {
-            return await _db.ProductCategories
-                .Where(pc => pc.Id == id)
+            return await _db.Users
+                .Where(u => u.Id == id)
                 .FirstOrDefaultAsync();
         }
 
         public async Task Delete(long id)
         {
-            ProductCategory data = await GetById(id);
+            User data = await GetById(id);
             if (data != null)
             {
-                _db.ProductCategories.Remove(data);
+                _db.Users.Remove(data);
                 await _db.SaveChangesAsync();
             }
         }
 
-        public async Task Update(ProductCategory input)
+        public async Task Update(User input)
         {
             if (input != null)
             {
-                _db.ProductCategories.Update(input);
+                _db.Users.Update(input);
                 await _db.SaveChangesAsync();
             }
         }

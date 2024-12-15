@@ -1,13 +1,13 @@
-﻿using Inventory_Management.Models;
-using static Inventory_Management.Models.DatabaseModel;
-using static System.Net.Mime.MediaTypeNames;
+﻿using static Inventory_Management.Models.DatabaseModel;
 
 namespace Inventory_Management.Services
 {
     public interface IProductService
     {
-        public Task<List<Product>> GetAll();
-        public Task<Product> GetById(long Id);
-        public Task Update(Product Input);
+        Task Create(Product input);
+        Task<List<Product>> GetAll();
+        Task<Product> GetById(long id);
+        Task Delete(long id);
+        Task Update(Product input);
     }
 }

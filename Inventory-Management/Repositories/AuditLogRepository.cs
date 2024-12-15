@@ -5,48 +5,48 @@ using static Inventory_Management.Models.DatabaseModel;
 
 namespace Inventory_Management.Repositories
 {
-    public class ProductRepository : IProductService
+    public class AuditLogRepository : IAuditLogService
     {
         private readonly ApplicationDbContext _db;
 
-        public ProductRepository(ApplicationDbContext context)
+        public AuditLogRepository(ApplicationDbContext context)
         {
             _db = context;
         }
 
-        public async Task Create(Product input)
+        public async Task Create(AuditLog input)
         {
-            _db.Products.Add(input);
+            _db.AuditLogs.Add(input);
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<Product>> GetAll()
+        public async Task<List<AuditLog>> GetAll()
         {
-            return await _db.Products.ToListAsync();
+            return await _db.AuditLogs.ToListAsync();
         }
 
-        public async Task<Product> GetById(long id)
+        public async Task<AuditLog> GetById(int id)
         {
-            return await _db.Products
-                .Where(p => p.Id == id)
+            return await _db.AuditLogs
+                .Where(i => i.Id == id)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task Delete(long id)
+        public async Task Delete(int id)
         {
-            Product data = await GetById(id);
+            AuditLog data = await GetById(id);
             if (data != null)
             {
-                _db.Products.Remove(data);
+                _db.AuditLogs.Remove(data);
                 await _db.SaveChangesAsync();
             }
         }
 
-        public async Task Update(Product input)
+        public async Task Update(AuditLog input)
         {
             if (input != null)
             {
-                _db.Products.Update(input);
+                _db.AuditLogs.Update(input);
                 await _db.SaveChangesAsync();
             }
         }
