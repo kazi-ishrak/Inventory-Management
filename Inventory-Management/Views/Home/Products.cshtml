@@ -1,0 +1,137 @@
+﻿@{
+    ViewData["Title"] = "Products ";
+}
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <link href="~/lib/datatables/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/css/productList.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="container-fluid p-3">
+        <h2 class="text-primary">Products</h2>
+        <hr>
+        <div class="mt-4">
+            <button id="openModalButton" class="btn btn-success">Create</button>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary bg-gradient">
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="DataTable_Projects" class="display table-bordered text-center" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>SKU</th>
+                                        <th>Stock</th>
+                                        <th>Price</th>
+                                        <th>Category</th>
+                                        <th>Created at</th>
+                                        <th>Updated at</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data will be dynamically populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding product-->
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="productName">Product Name:</label>
+                            <input type="text" id="productName" class="form-control" placeholder="Soap" />
+                        </div>
+                   
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="stock">Stock</label>
+                            <input type="number" id="stock" class="form-control" placeholder="10" min="0" required>
+                        </div>
+
+                        <div class="form-group col">
+                            <label for="price">Price</label>
+                            <input type="number" id="price" class="form-control" placeholder="50.00" min="0.01" step="0.01" required>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="submitProductButton" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal for Updating product-->
+    <div class="modal fade" id="rowEditModal" tabindex="-1" aria-labelledby="updateProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateProductModalLabel">Update</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="productIdHidden" />
+
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="productNameUpdate">Product Name:</label>
+                            <input type="text" id="productNameUpdate" class="form-control"/>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="stockUpdate">Stock</label>
+                            <input type="number" id="stockUpdate" class="form-control"  required>
+                        </div>
+
+                        <div class="form-group col">
+                            <label for="priceUpdate">Price</label>
+                            <input type="number" id="priceUpdate" class="form-control"  required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="updateProductButton" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/datatables/dataTables.min.js"></script>
+    <script src="~/lib/datatables/datatables.bootstrap5.min.js"></script>
+    <script src="~/js/productList.js"></script>
+</body>
+</html>

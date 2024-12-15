@@ -1,0 +1,63 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@{
+    ViewData["Title"] = "Products ";
+}
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <link href="~/lib/datatables/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+
+</head>
+<body>
+    <div class="container-fluid p-3">
+        <h2 class="text-primary">Products</h2>
+        <hr>
+        <div class="mt-4">
+            <button id="openModalButton" class="btn btn-success">Create</button>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary bg-gradient">
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="DataTable_Categories" class="display table-bordered text-center" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        
+                                        <th>Category Name</th>
+                                        <th>Created at</th>
+                                        <th>Updated at</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data will be dynamically populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/datatables/dataTables.min.js"></script>
+    <script src="~/lib/datatables/datatables.bootstrap5.min.js"></script>
+ 
+</body>
+</html>

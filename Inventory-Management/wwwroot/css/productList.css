@@ -1,0 +1,9 @@
+﻿
+.required-field {
+    border: 2px solid red;
+}
+
+#submitButton:hover {
+    background-color: green; /* Darker button color on hover */
+    border-color: #004085;
+}
