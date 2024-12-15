@@ -53,106 +53,71 @@ $('#openModalButton').on('click', function () {
 });
 
 $('#submitCategoryButton').on('click', HandleFormSubmit);
-$('#UpdateCategoryButton').on('click', HandleUpdateFromSubmit);
+$('#UpdateCategoryButton').on('click', HandleUpdateFormSubmit);
 function RowEdit(rowid) {
 
     $.ajax({
-        url: `/Category/GetById/${rowid}`,
+        url: `/Category/GetById?id=${rowid}`,
         method: 'GET',
         contentType: 'application/json',
         success: function (data) {
             $('#categoryNameUpdate').val(data.name);
+            $('#categoryIdHidden').val(data.id);
             $('#updateCategoryModal').modal('show');
 
         },
 
     });
 }
-function HandleUpdateFromSubmit(e) {
-    e.preventDefault();
-    var updateFormData = {
-        id: $('#projectIdHidden').val().toString(),
-        project_id: $('#projectIdUpdate').val().toString(),
-        type_id: $('#projectTypeIdUpdate').val(),
-        code: $('#projectCodeUpdate').val(),
-        name: $('#projectNameUpdate').val(),
-        organization: $('#organizationUpdate').val(),
-        api_token: $('#apiTokenUpdate').val(),
-        hrm_identifier: $('#hrmEnabledUpdate').val() === 'Yes'
+function HandleUpdateFormSubmit(e) {
+    e.preventDefault();  // Prevent the default form submission
+    var now = new Date();
+    let formdata = {
+        id: $('#categoryIdHidden').val(),
+        name: $('#categoryNameUpdate').val()
     };
-    if (!updateFormData.project_id || !updateFormData.name || !updateFormData.api_token || !updateFormData.type_id) {
-        alert('Please fill in all required fields.');
-        $('#projectIdUpdate').addClass('required-field');
-        $('#apiTokenUpdate').addClass('required-field');
-        $('#projectNameUpdate').addClass('required-field');
-        $('#projectTypeIdUpdate').addClass('required-field');
-        return;
+
+    if (formdata.name == "") {
+        alert('Please enter a Category Name.');
+        $('#categoryNameUpdate').addClass('required-field');  // Highlight the field if invalid
+        return false;
     }
-    UpdateProjectData(updateFormData);
+    console.log(formdata);
+    UpdateProductData(formdata);
 }
 
 
-function UpdateProjectData(formData) {
+function UpdateProductData(formData) {
     $.ajax({
-        url: '/api/Projects/update',
+        url: '/Category/Update',
 
-        method: 'POST',
+        method: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function (response) {
-            alert("Project successfully Updated.");
-            $('#rowEditModal').modal('hide');
-            $('#DataTable_Projects').DataTable().ajax.reload(null, false);
-            console.log("API response:", response);
+            alert("Category successfully Updated.");
+            $('#updateCategoryModal').modal('hide');
+            $('#DataTable_Categories').DataTable().ajax.reload(null, false);
+
         },
         error: function (xhr, status, error) {
-            console.error("Error Updating project:", xhr.responseText);
-            alert("Failed to Update project: " + xhr.responseText);
+            alert("Failed to Update Category: " + xhr.responseText);
         }
     });
-}
-function HandleFormSubmit(e) {
-    e.preventDefault();
-    var formdata = {
-        project_id: $('#projectId').val().toString(),
-        type_id: $('#projectTypeSelect').val().toString(),
-        code: $('#projectCode').val(),
-        name: $('#projectName').val(),
-        organization: $('#organization').val(),
-        api_token: $('#apiToken').val(),
-        hrm_identifier: $('#hrmEnabled').val() === 'Yes'
-    };
-    if (!formdata.project_id || !formdata.name || !formdata.api_token || !formdata.type_id) {
-        alert('Please fill in all required fields.');
-        $('#projectId').addClass('required-field');
-        $('#apiToken').addClass('required-field');
-        $('#projectName').addClass('required-field');
-        $('#projectTypeSelect').addClass('required-field');
-        console.log(formdata.type_id);
-        return;
-    }
-
-    InsertAProject(formdata);
 }
 
 function HandleFormSubmit(e) {
     e.preventDefault();  // Prevent the default form submission
-
+    var now = new Date();
     var formdata = {
-        productName: $('#categoryName').val()
+        name: $('#categoryName').val(),
+    
+
     };
 
-    // Validate stock to be a positive integer
-    if (!Number.isInteger(Number(formdata.stock)) || Number(formdata.stock) < 1) {
-        alert('Please enter a valid stock number (positive integer).');
-        $('#stock').addClass('required-field');  // Highlight the field if invalid
-        return false;
-    }
-
-    // Validate price to be a positive decimal
-    if (Number(formdata.price) <= 0) {
-        alert('Please enter a valid price (positive number).');
-        $('#price').addClass('required-field');  // Highlight the field if invalid
+    if ( formdata.name == "") {
+        alert('Please enter a Category Name.');
+        $('#categoryName').addClass('required-field');  // Highlight the field if invalid
         return false;
     }
 
@@ -160,27 +125,26 @@ function HandleFormSubmit(e) {
     AddProduct(formdata); // A function to handle the AJAX request or form submission
 }
 
-
-
-function InsertAProject(formData) {
+function AddProduct(formData) {
 
     $.ajax({
-        url: '/api/Projects/insert',
+        url: '/Category/Create',
 
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function (response) {
-            console.log("API response:", response);
-            alert("Project successfully Created.");
-            $('#addProjectModal').modal('hide');
 
-            $('#DataTable_Projects').DataTable().ajax.reload(null, false);
+            console.log("API response:", response);
+            alert("Category successfully Added.");
+            $('#addCategoryModal').modal('hide');
+
+            $('#DataTable_Categories').DataTable().ajax.reload(null, false);
             clearFormFields();
         },
         error: function (xhr, status, error) {
-            console.error("Error inserting project:", xhr.responseText);
-            alert("Failed to add project: " + xhr.responseText);
+            console.error("Error adding Category:", xhr.responseText);
+            alert("Failed to add Category: " + xhr.responseText);
         }
     });
 }

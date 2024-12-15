@@ -16,6 +16,8 @@ namespace Inventory_Management.Repositories
 
         public async Task Create(Category input)
         {
+            input.Created_at = DateTime.Now;
+            input.Updated_at = DateTime.Now;
             _db.Categories.Add(input);
             await _db.SaveChangesAsync();
         }
@@ -44,25 +46,24 @@ namespace Inventory_Management.Repositories
 
         public async Task Update(Category input)
         {
-            if (input != null)
-            {
-                _db.Categories.Update(input);
-                await _db.SaveChangesAsync();
-            }
-        }
-
-        public async Task<Category> GetById(long Id)
-        {
+            var Data = await _db.Categories.Where(x => x.Id == input.Id).FirstOrDefaultAsync();
             try
             {
-                var Query = await _db.Categories.Where(x => x.Id == Id).FirstOrDefaultAsync();
-                return Query;
+                if (Data != null)
+                {
+                    Data.Name = input.Name;
+                    Data.Updated_at = DateTime.Now;
+
+                    await _db.SaveChangesAsync();
+                }
             }
             catch (Exception ex)
             {
-                LogHandler.WriteErrorLog(ex);
-                return null;
+                
             }
+            
         }
+
+       
     }
 }
