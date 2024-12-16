@@ -41,7 +41,7 @@ namespace Inventory_Management.Models
 
             // Navigation property to ProductCategory
             [JsonIgnore]
-            public virtual ICollection<ProductCategory> ProductCategories { get; set; }
+            public virtual ICollection<ProductCategory>? ProductCategories { get; set; }
         }
 
         // Category Entity
@@ -67,7 +67,7 @@ namespace Inventory_Management.Models
 
             // Navigation property to ProductCategory
             [JsonIgnore]
-            public virtual ICollection<ProductCategory> ProductCategories { get; set; }
+            public virtual ICollection<ProductCategory>? ProductCategories { get; set; }
         }
 
         // ProductCategory Entity (Join Table between Product and Category)
@@ -89,12 +89,12 @@ namespace Inventory_Management.Models
             // Foreign key to Product
             [JsonIgnore]
             [ForeignKey("ProductId")]
-            public virtual Product Product { get; set; }
+            public virtual Product? Product { get; set; }
 
             // Foreign key to Category
             [JsonIgnore]
             [ForeignKey("CategoryId")]
-            public virtual Category Category { get; set; }
+            public virtual Category? Category { get; set; }
         }
 
         [Table("users")]

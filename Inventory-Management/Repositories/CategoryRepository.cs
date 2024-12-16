@@ -8,10 +8,14 @@ namespace Inventory_Management.Repositories
     public class CategoryRepository : ICategoryService
     {
         private readonly ApplicationDbContext _db;
+        private readonly IProductCategoryService _productCategoryService;
+        private readonly IProductService _productService;
 
-        public CategoryRepository(ApplicationDbContext context)
+        public CategoryRepository(ApplicationDbContext context, IProductCategoryService productCategoryService, IProductService productService)
         {
             _db = context;
+            _productCategoryService = productCategoryService;
+            _productService = productService;
         }
 
         public async Task Create(Category input)
@@ -34,13 +38,29 @@ namespace Inventory_Management.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task Delete(long id)
+        public async Task Delete(int id)
         {
             Category data = await GetById(id);
-            if (data != null)
+            if (data == null)
             {
-                _db.Categories.Remove(data);
-                await _db.SaveChangesAsync();
+                return;
+            }
+
+            _db.Categories.Remove(data);
+            await _db.SaveChangesAsync();
+
+            var productCategories = await _productCategoryService.GetAllByCategory(id);
+            if (productCategories != null)
+            {
+                var productIds = productCategories.Select(i => i.ProductId).ToList();
+                foreach (var productId in productIds)
+                {
+                    var product = await _productService.GetById(productId);
+                    if (product != null)
+                    {
+                        await _productService.Delete(productId);
+                    }
+                }
             }
         }
 
