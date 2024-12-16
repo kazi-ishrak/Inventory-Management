@@ -75,6 +75,7 @@ namespace Inventory_Management.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(Product input)
         {
+            input.Updated_at = DateTime.Now;
             await _productService.Update(input);
             return Ok();
         }

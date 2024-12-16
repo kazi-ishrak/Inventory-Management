@@ -1,10 +1,5 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-@{
-    ViewData["Title"] = "Products ";
+﻿@{
+    ViewData["Title"] = "Categories ";
 }
 
 <html>
@@ -14,12 +9,11 @@
     <link href="~/lib/datatables/dataTables.bootstrap5.min.css" rel="stylesheet" />
     <link href="~/lib/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet" />
     <link href="~/lib/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-
-
+    <link href="~/css/category.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container-fluid p-3">
-        <h2 class="text-primary">Products</h2>
+        <h2 class="text-primary">Categories</h2>
         <hr>
         <div class="mt-4">
             <button id="openModalButton" class="btn btn-success">Create</button>
@@ -34,7 +28,7 @@
                             <table id="DataTable_Categories" class="display table-bordered text-center" style="width: 100%;">
                                 <thead>
                                     <tr>
-                                        
+
                                         <th>Category Name</th>
                                         <th>Created at</th>
                                         <th>Updated at</th>
@@ -54,10 +48,65 @@
         </div>
     </div>
 
+    <!-- Modal for adding product-->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="categoryName">Category Name:</label>
+                            <input type="text" id="categoryName" class="form-control" placeholder="Soap" />
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="submitCategoryButton" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal for Updating product-->
+    <div class="modal fade" id="updateCategoryModal" tabindex="-1" aria-labelledby="updateCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateCategoryModalLabel">Update Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="categoryIdHidden" />
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="categoryNameUpdate">Category Name:</label>
+                            <input type="text" id="categoryNameUpdate" class="form-control" placeholder="Soap" />
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="UpdateCategoryButton" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/datatables/dataTables.min.js"></script>
     <script src="~/lib/datatables/datatables.bootstrap5.min.js"></script>
- 
+    <script src="~/js/Categories.js"></script>
 </body>
 </html>
