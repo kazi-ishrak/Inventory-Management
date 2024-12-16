@@ -9,10 +9,12 @@ namespace Inventory_Management.Repositories
     public class ProductRepository : IProductService
     {
         private readonly ApplicationDbContext _db;
+        private readonly IAuditLogService _auditLogService;
 
-        public ProductRepository(ApplicationDbContext context)
+        public ProductRepository(ApplicationDbContext context, IAuditLogService auditLogService)
         {
             _db = context;
+            _auditLogService = auditLogService;
         }
 
         public async Task Create(Product input)
@@ -59,6 +61,14 @@ namespace Inventory_Management.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Product?> GetByIdV2(long id)
+        {
+            return await _db.Products
+                .AsNoTracking()
+                .Where(p => p.Id == id)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task Delete(long id)
         {
             Product data = await GetById(id);
@@ -71,10 +81,27 @@ namespace Inventory_Management.Repositories
 
         public async Task Update(Product input)
         {
-            if (input != null)
+            if (input != null && input.Stock > 0)
             {
-                _db.Products.Update(input);
-                await _db.SaveChangesAsync();
+                var oldProduct = await GetByIdV2(input.Id);
+                if (oldProduct != null)
+                {
+                    if (oldProduct.Stock != input.Stock)
+                    {
+                        await _auditLogService.Create(new()
+                        {
+                            ProductId = input.Id,
+                            Timestamp = DateTime.Now,
+                            ChangeType =  $"{input.Name}'s stock is changed to: {input.Stock}",
+                            Quantity = input.Stock,
+                            UserId = 0,
+                            CreatedAt = DateTime.Now
+                        });
+                    }
+
+                    _db.Products.Update(input);
+                    await _db.SaveChangesAsync();
+                }
             }
         }
     }
