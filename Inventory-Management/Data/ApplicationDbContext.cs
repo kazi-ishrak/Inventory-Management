@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using static Inventory_Management.Models.DatabaseModel;
 namespace Inventory_Management.Data
 {
@@ -18,6 +19,20 @@ namespace Inventory_Management.Data
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
+
+            // Configure cascade delete from Category to Product via ProductCategory
+            builder.Entity<ProductCategory>()
+                .HasOne(pc => pc.Category)
+                .WithMany(c => c.ProductCategories)
+                .HasForeignKey(pc => pc.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Ensure that when a Category is deleted, related Products are also deleted
+            builder.Entity<Product>()
+                .HasMany(p => p.ProductCategories)
+                .WithOne(pc => pc.Product)
+                .HasForeignKey(pc => pc.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(builder);
         }

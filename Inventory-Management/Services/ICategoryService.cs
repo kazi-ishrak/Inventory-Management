@@ -7,7 +7,7 @@ namespace Inventory_Management.Services
         Task Create(Category input);
         Task<List<Category>> GetAll();
         Task<Category> GetById(long id);
-        Task Delete(long id);
+        Task Delete(int id);
         Task Update(Category input);
     }
 }
