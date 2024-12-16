@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Content Remove="Views\Home\AuditLogs.cshtml" />
-    <Content Remove="Views\Home\Categories.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,16 +27,10 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\Home\AuditLogs.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Home\Categories.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Views\Home\AuditLogs.cshtml" />
-    <None Include="Views\Home\Categories.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Home\Categories.cshtml" />
   </ItemGroup>
 
 </Project>

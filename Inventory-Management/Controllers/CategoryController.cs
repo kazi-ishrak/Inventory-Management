@@ -1,5 +1,6 @@
 ﻿using Inventory_Management.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Dynamic.Core;
 using static Inventory_Management.Models.DatabaseModel;
 
 namespace Inventory_Management.Controllers
@@ -15,11 +16,39 @@ namespace Inventory_Management.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpGet("GetAll")]
+        [HttpPost("GetAll")]
         public async Task<IActionResult> GetAll()
         {
+            string draw = Request.Form["draw"];
+            int start = Convert.ToInt32(Request.Form["start"]);
+            int length = Convert.ToInt32(Request.Form["length"]);
+            string search = Request.Form["search[value]"];
+            string sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"] + "][data]"];
+            string sortDirection = Request.Form["order[0][dir]"];
+
             var data = await _categoryService.GetAll();
-            return Ok(data);
+
+            int recordsTotal = data.Count;
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                data = data.Where(x =>
+                (x.Name != null && x.Name.ToLower().Contains(search.ToLower()))
+                ).ToList();
+            }
+
+            int recordsFiltered = data.Count;
+
+            //Sorting
+            if (!string.IsNullOrEmpty(sortColumn))
+            {
+                data = data.AsQueryable().OrderBy(sortColumn + " " + sortDirection).ToList();
+            }
+            //Paging
+            data = data.Skip(start).Take(length).ToList();
+            return Ok(new { draw, recordsTotal, recordsFiltered, data = data });
+
+
         }
 
         [HttpGet("GetById")]

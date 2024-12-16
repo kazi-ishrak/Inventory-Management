@@ -1,6 +1,6 @@
 ﻿$(function () {
 
-    $('#DataTable_Projects').DataTable({
+    $('#DataTable_Products').DataTable({
         "processing": true,
         "language": {
             "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw text-primary"></i><span class="sr-only">Loading...</span>'
