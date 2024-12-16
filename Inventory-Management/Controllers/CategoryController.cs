@@ -48,7 +48,7 @@ namespace Inventory_Management.Controllers
             data = data.Skip(start).Take(length).ToList();
             return Ok(new { draw, recordsTotal, recordsFiltered, data = data });
 
-            
+
         }
 
         [HttpGet("GetById")]
