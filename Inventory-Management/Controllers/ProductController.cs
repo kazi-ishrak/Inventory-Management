@@ -17,7 +17,7 @@ namespace Inventory_Management.Controllers
 
         [HttpPost("GetAll")]
         public async Task<IActionResult> GetAll(
-            [FromForm] int draw,
+            [FromForm] string draw,
             [FromForm] int start,
             [FromForm] int length)
         {
