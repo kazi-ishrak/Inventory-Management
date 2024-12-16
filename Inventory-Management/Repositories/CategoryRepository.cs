@@ -59,11 +59,11 @@ namespace Inventory_Management.Repositories
             }
             catch (Exception ex)
             {
-                
+
             }
-            
+
         }
 
-       
+
     }
 }
