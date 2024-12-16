@@ -19,22 +19,38 @@ namespace Inventory_Management.Controllers
         public async Task<IActionResult> GetAll(
             [FromForm] string draw,
             [FromForm] int start,
-            [FromForm] int length)
+            [FromForm] int length,
+            [FromForm] Dictionary<string, string> search,
+            [FromForm] List<Dictionary<string, string>> columns,
+            [FromForm] List<Dictionary<string, string>> order)
         {
-            //    string draw = Request.Form["draw"];
-            //    int start = Convert.ToInt32(Request.Form["start"]);
-            //    int length = Convert.ToInt32(Request.Form["length"]);
-            string search = Request.Form["search[value]"];
-            string sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"] + "][data]"];
-            string sortDirection = Request.Form["order[0][dir]"];
+            //string draw = Request.Form["draw"];
+            //int start = Convert.ToInt32(Request.Form["start"]);
+            //int length = Convert.ToInt32(Request.Form["length"]);
+            //string search_value = Request.Form["search[value]"];
+            //string sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"] + "][data]"];
+            //string sortDirection = Request.Form["order[0][dir]"];
+            string search_value = search["value"] ?? "";
+
+            string columnIndexString = order
+                .FirstOrDefault()?["column"] ?? "0";
+
+            int columnIndex = int.Parse(columnIndexString);
+
+            string sortColumn = columns
+                .ElementAtOrDefault(columnIndex)?["data"] ?? "";
+
+            string sortDirection = order
+                .FirstOrDefault()?["dir"] ?? "";
+
             var data = await _productService.GetAll();
             int recordsTotal = data.Count;
 
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrEmpty(search_value))
             {
                 data = data.Where(x =>
-                    (x.Name != null && x.Name.ToLower().Contains(search.ToLower())) ||
-                    (x.Sku != null && x.Sku.ToLower().Contains(search.ToLower()))
+                    (x.Name != null && x.Name.ToLower().Contains(search_value.ToLower())) ||
+                    (x.Sku != null && x.Sku.ToLower().Contains(search_value.ToLower()))
                 ).ToList();
             }
 
