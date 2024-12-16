@@ -1,6 +1,8 @@
 ﻿using Inventory_Management.Data;
 using Inventory_Management.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Buffers;
 using static Inventory_Management.Models.DatabaseModel;
 
 namespace Inventory_Management.Repositories
@@ -22,8 +24,15 @@ namespace Inventory_Management.Repositories
 
         public async Task<List<Product>> GetAll()
         {
-            return await _db.Products.ToListAsync();
+            // Start with IQueryable for flexibility and deferred execution
+            var productsQuery = _db.Products
+                                   .AsQueryable()  // Defers execution until the query is actually evaluated
+                                   .Include(p => p.ProductCategories) // Eager load the related ProductCategories
+                                   .ThenInclude(pc => pc.Category); // Eager load the related Category for each ProductCategory
+
+            return await productsQuery.ToListAsync();
         }
+
 
         public async Task<Product> GetById(long id)
         {

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 namespace Inventory_Management.Models
 {
     public class DatabaseModel
@@ -39,7 +40,6 @@ namespace Inventory_Management.Models
 
 
             public virtual ICollection<ProductCategory> ProductCategories { get; set; }
-
         }
 
         [Table("categories")]
@@ -60,6 +60,9 @@ namespace Inventory_Management.Models
             [Required]
             [Column("updated_at")]
             public DateTime Updated_at { get; set; } // Timestamp for the last update
+
+            // Navigation property to link with ProductCategory
+            public virtual ICollection<ProductCategory> ProductCategories { get; set; }
         }
 
         [Table("product_categories")]
@@ -70,15 +73,24 @@ namespace Inventory_Management.Models
             public long Id { get; set; } // Primary Key
 
             [Required]
-
             [Column("product_id")]
-            public long ProductId { get; set; } // Product Name
-
+            public long ProductId { get; set; } // Foreign Key to Product
 
             [Required]
             [Column("category_id")]
-            public long CategoryId { get; set; } // Timestamp for the last update
+            public long CategoryId { get; set; } // Foreign Key to Category
+
+            // Navigation property to Product (the product this category belongs to)
+            [JsonIgnore]
+            [ForeignKey("ProductId")]
+            public virtual Product Product { get; set; }
+
+            // Navigation property to Category (the category that is related to this product)
+            [JsonIgnore]
+            [ForeignKey("CategoryId")]
+            public virtual Category Category { get; set; }
         }
+
 
         [Table("users")]
         public class User
