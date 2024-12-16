@@ -138,9 +138,8 @@ function AddProduct(formData) {
             console.log("API response:", response);
             alert("Category successfully Added.");
             $('#addCategoryModal').modal('hide');
-
             $('#DataTable_Categories').DataTable().ajax.reload(null, false);
-            clearFormFields();
+
         },
         error: function (xhr, status, error) {
             console.error("Error adding Category:", xhr.responseText);
