@@ -1,4 +1,5 @@
 ﻿using Inventory_Management.Handler;
+using Inventory_Management.Models;
 using Inventory_Management.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Dynamic.Core;
@@ -16,41 +17,33 @@ namespace Inventory_Management.Controllers
         }
 
         [HttpPost("GetAll")]
-        public async Task<IActionResult> GetAll(
-            [FromForm] string draw,
-            [FromForm] int start,
-            [FromForm] int length,
-            [FromForm] Dictionary<string, string> search,
-            [FromForm] List<Dictionary<string, string>> columns,
-            [FromForm] List<Dictionary<string, string>> order)
+        public async Task<IActionResult> GetAll([FromForm] DataTableRequestDTO request)
         {
-            //string draw = Request.Form["draw"];
-            //int start = Convert.ToInt32(Request.Form["start"]);
-            //int length = Convert.ToInt32(Request.Form["length"]);
-            //string search_value = Request.Form["search[value]"];
-            //string sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"] + "][data]"];
-            //string sortDirection = Request.Form["order[0][dir]"];
-            string search_value = search["value"] ?? "";
+            string searchValue =
+                request.Search["value"] ?? "";
 
-            string columnIndexString = order
-                .FirstOrDefault()?["column"] ?? "0";
+            string columnIndexString =
+                request.Order.FirstOrDefault()?["column"] ?? "0";
 
-            int columnIndex = int.Parse(columnIndexString);
+            int columnIndex =
+                int.Parse(columnIndexString);
 
-            string sortColumn = columns
-                .ElementAtOrDefault(columnIndex)?["data"] ?? "";
+            string sortColumn =
+                request.Columns
+                    .ElementAtOrDefault(columnIndex)?
+                    ["data"] ?? "";
 
-            string sortDirection = order
-                .FirstOrDefault()?["dir"] ?? "";
+            string sortDirection =
+                request.Order.FirstOrDefault()?["dir"] ?? "";
 
             var data = await _productService.GetAll();
             int recordsTotal = data.Count;
 
-            if (!string.IsNullOrEmpty(search_value))
+            if (!string.IsNullOrEmpty(searchValue))
             {
                 data = data.Where(x =>
-                    (x.Name != null && x.Name.ToLower().Contains(search_value.ToLower())) ||
-                    (x.Sku != null && x.Sku.ToLower().Contains(search_value.ToLower()))
+                    (x.Name != null && x.Name.ToLower().Contains(searchValue.ToLower())) ||
+                    (x.Sku != null && x.Sku.ToLower().Contains(searchValue.ToLower()))
                 ).ToList();
             }
 
@@ -59,14 +52,15 @@ namespace Inventory_Management.Controllers
             if (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortDirection))
             {
                 data = data.AsQueryable()
-                           .OrderBy($"{sortColumn} {sortDirection}")
-                           .ToList();
+                    .OrderBy($"{sortColumn} {sortDirection}")
+                    .ToList();
             }
 
-            data = data.Skip(start).Take(length).ToList();
+            data = data.Skip(request.Start).Take(request.Length).ToList();
 
-            return Ok(new { draw, recordsTotal, recordsFiltered, data });
+            return Ok(new { request.Draw, recordsTotal, recordsFiltered, data });
         }
+
 
 
         [HttpGet("GetById/{Id}")]
