@@ -27,7 +27,7 @@ namespace Inventory_Management.Repositories
 
         public async Task<List<ProductCategory>> GetAllByCategory(int categoryId)
         {
-            return await _db.ProductCategories.Where(i=> i.CategoryId == categoryId).ToListAsync();
+            return await _db.ProductCategories.Where(i => i.CategoryId == categoryId).ToListAsync();
         }
 
         public async Task<ProductCategory> GetById(long id)
