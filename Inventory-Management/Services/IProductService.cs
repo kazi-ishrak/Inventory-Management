@@ -1,11 +1,12 @@
-﻿using static Inventory_Management.Models.DatabaseModel;
+﻿using Inventory_Management.Models;
+using static Inventory_Management.Models.DatabaseModel;
 
 namespace Inventory_Management.Services
 {
     public interface IProductService
     {
         Task Create(Product input);
-        Task<List<Product>> GetAll();
+        Task<List<ProductDto>> GetAll();
         Task<Product> GetById(long id);
         Task Delete(long id);
         Task Update(Product input);
