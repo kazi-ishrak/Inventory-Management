@@ -49,37 +49,6 @@
     });
 });
 
-$('#openModalButton').on('click', function () {
-    $('#addProductModal').modal('show');
-});
-
-$('#submitProductButton').on('click', function (e) {
-    e.preventDefault();
-    const formData = {
-        id: 0,
-        name: $('#productName').val(),
-        sku: $('#sku').val(),
-        stock: parseInt($('#stock').val()),
-        price: parseFloat($('#price').val()),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-    };
-    $.ajax({
-        url: "http://localhost:5217/Product/Create",
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify(formData),
-        success: function () {
-            alert("Product created successfully");
-            $('#addProductModal').modal('hide');
-            $('#DataTable_Products').DataTable().ajax.reload();
-        },
-        error: function () {
-            alert("Error creating product");
-        }
-    });
-});
-
 function RowEdit(id) {
     $.ajax({
         url: `Product/GetById/${id}`,
@@ -126,8 +95,6 @@ $('#updateProductButton').on('click', function (e) {
     });
 });
 
-
-
 function RowDelete(id) {
     if (confirm("Are you sure you want to delete this product?")) {
         $.ajax({
@@ -149,3 +116,120 @@ function formatDatetime(data) {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
     return date.toLocaleDateString('en-US', options);
 }
+
+// Fetch categories and populate the checkboxes in the modal
+function fetchCategories() {
+    $.ajax({
+        url: "http://localhost:5217/Category/GetAll",
+        method: "GET",
+        success: function (categories) {
+            populateCategoryCheckboxes(categories);
+        },
+        error: function () {
+            alert("Error fetching categories");
+        }
+    });
+}
+
+// Populate the category checkboxes in the modal
+function populateCategoryCheckboxes(categories) {
+    let checkboxHtml = '';
+    categories.forEach(function (category) {
+        checkboxHtml += `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="${category.id}" id="category_${category.id}">
+                <label class="form-check-label" for="category_${category.id}">
+                    ${category.name}
+                </label>
+            </div>
+        `;
+    });
+    $('#categoryCheckboxContainer').html(checkboxHtml);
+}
+
+// Create the product
+function createProduct(formData) {
+    return $.ajax({
+        url: "http://localhost:5217/Product/Create",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(formData),
+    });
+}
+
+// Assign categories to the product
+function assignCategoriesToProduct(productId, selectedCategoryIds) {
+    selectedCategoryIds.forEach(function (categoryId) {
+        const productCategoryData = {
+            productId: productId,
+            categoryId: categoryId
+        };
+
+        // Making the second API call to link the product and category
+        $.ajax({
+            url: "http://localhost:5217/ProductCategory/Create",  // THIS IS THE SECOND API
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(productCategoryData),
+            success: function () {
+                console.log(`Product assigned to category ID: ${categoryId}`);
+            },
+            error: function () {
+                alert("Error assigning category to product");
+            }
+        });
+    });
+}
+
+// Handle form submission
+function handleFormSubmit() {
+    // Get selected category IDs
+    let selectedCategoryIds = [];
+    $('#categoryCheckboxContainer input:checked').each(function () {
+        selectedCategoryIds.push($(this).val());
+    });
+
+    const formData = {
+        name: $('#productName').val(),
+        sku: $('#sku').val(),
+        stock: parseInt($('#stock').val()),
+        price: parseFloat($('#price').val()),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+    };
+
+    // Disable the submit button to prevent multiple clicks
+    $('#submitProductButton').prop('disabled', true).text('Submitting...');
+
+    // Create product first
+    createProduct(formData).done(function (productData) {
+        // After product is created, assign categories
+        assignCategoriesToProduct(productData.id, selectedCategoryIds);
+
+        alert("Product created and categories assigned successfully");
+        $('#addProductModal').modal('hide');
+        $('#DataTable_Products').DataTable().ajax.reload();
+    }).fail(function () {
+        alert("Error creating product");
+    }).always(function () {
+        // Re-enable the submit button after the request is complete
+        $('#submitProductButton').prop('disabled', false).text('Submit');
+    });
+}
+
+$(function () {
+    // Initialize the modal by fetching categories
+    fetchCategories();
+
+    // Open the modal on button click
+    $('#openModalButton').on('click', function () {
+        $('#addProductModal').modal('show');
+    });
+
+    // Submit the product and assign categories when the submit button is clicked
+    $('#submitProductButton').on('click', function (e) {
+        e.preventDefault();
+        handleFormSubmit();
+    });
+});
+
