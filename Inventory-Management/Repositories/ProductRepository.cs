@@ -19,6 +19,10 @@ namespace Inventory_Management.Repositories
 
         public async Task Create(Product input)
         {
+            if(input == null || input.Stock < 0)
+            {
+                return;
+            }
             _db.Products.Add(input);
             await _db.SaveChangesAsync();
         }

@@ -25,6 +25,7 @@ namespace Inventory_Management.Models
 
             [Required]
             [Column("stock")]
+            [Range(0, uint.MaxValue)]
             public int Stock { get; set; }
 
             [Required]
