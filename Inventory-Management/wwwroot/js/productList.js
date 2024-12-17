@@ -87,9 +87,11 @@ function RowEdit(id) {
         success: function (data) {
             $('#productIdHidden').val(data.id);
             $('#productNameUpdate').val(data.name);
-            $('#skuUpdate').val(data.sku);
+            $('#skuUpdate').val(data.sku); // Ensure SKU is populated
             $('#stockUpdate').val(data.stock);
             $('#priceUpdate').val(data.price);
+            $('#created_atHidden').val(data.created_at); // Store created_at for later use
+            $('#updated_atHidden').val(data.updated_at); // Store updated_at for later use
             $('#rowEditModal').modal('show');
         }
     });
@@ -97,14 +99,17 @@ function RowEdit(id) {
 
 $('#updateProductButton').on('click', function (e) {
     e.preventDefault();
+
     const formData = {
         id: parseInt($('#productIdHidden').val()),
         name: $('#productNameUpdate').val(),
-        sku: $('#skuUpdate').val(),
+        sku: $('#skuUpdate').val(), // SKU will be included in the request
         stock: parseInt($('#stockUpdate').val()),
         price: parseFloat($('#priceUpdate').val()),
-        updated_at: new Date().toISOString()
+        created_at: $('#created_atHidden').val(), // Include created_at from hidden field
+        updated_at: new Date().toISOString() // Set updated_at to current timestamp
     };
+
     $.ajax({
         url: "http://localhost:5217/Product/Update",
         method: "PUT",
@@ -120,6 +125,8 @@ $('#updateProductButton').on('click', function (e) {
         }
     });
 });
+
+
 
 function RowDelete(id) {
     if (confirm("Are you sure you want to delete this product?")) {

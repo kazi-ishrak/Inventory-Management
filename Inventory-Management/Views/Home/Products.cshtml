@@ -94,9 +94,16 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="productIdHidden" />
+                    <input type="hidden" id="created_atHidden" />  <!-- Hidden field for created_at -->
+                    <input type="hidden" id="updated_atHidden" />  <!-- Hidden field for updated_at -->
+
                     <div class="form-group">
                         <label for="productNameUpdate">Product Name:</label>
                         <input type="text" id="productNameUpdate" class="form-control" placeholder="Product Name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="skuUpdate">SKU:</label>
+                        <input type="text" id="skuUpdate" class="form-control" placeholder="SKU" required />
                     </div>
                     <div class="form-group">
                         <label for="stockUpdate">Stock:</label>
@@ -114,6 +121,7 @@
             </div>
         </div>
     </div>
+
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
