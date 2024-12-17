@@ -10,11 +10,13 @@ namespace Inventory_Management.Repositories
     {
         private readonly ApplicationDbContext _db;
         private readonly IAuditLogService _auditLogService;
+        private readonly IProductCategoryService _productCategoryService;
 
-        public ProductRepository(ApplicationDbContext context, IAuditLogService auditLogService)
+        public ProductRepository(ApplicationDbContext context, IAuditLogService auditLogService, IProductCategoryService productCategoryService)
         {
             _db = context;
             _auditLogService = auditLogService;
+            _productCategoryService = productCategoryService;
         }
 
         public async Task<Product?> Create(Product input)
@@ -77,12 +79,18 @@ namespace Inventory_Management.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task Delete(long id)
+        public async Task Delete(int id)
         {
             Product data = await GetById(id);
             if (data != null)
             {
                 _db.Products.Remove(data);
+                await _db.SaveChangesAsync();
+            }
+            var productCategories = await _productCategoryService.GetAllByProduct(id);
+            foreach (var item in productCategories)
+            {
+                _db.ProductCategories.Remove(item);
                 await _db.SaveChangesAsync();
             }
         }

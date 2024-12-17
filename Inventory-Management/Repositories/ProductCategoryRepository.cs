@@ -30,6 +30,11 @@ namespace Inventory_Management.Repositories
             return await _db.ProductCategories.Where(i => i.CategoryId == categoryId).ToListAsync();
         }
 
+        public async Task<List<ProductCategory>> GetAllByProduct(int productId)
+        {
+            return await _db.ProductCategories.Where(i => i.ProductId == productId).ToListAsync();
+        }
+
         public async Task<ProductCategory> GetById(long id)
         {
             return await _db.ProductCategories

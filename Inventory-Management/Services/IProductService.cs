@@ -8,7 +8,7 @@ namespace Inventory_Management.Services
         Task<Product?> Create(Product input);
         Task<List<ProductDto>> GetAll();
         Task<Product> GetById(long id);
-        Task Delete(long id);
+        Task Delete(int id);
         Task Update(Product input);
     }
 }
