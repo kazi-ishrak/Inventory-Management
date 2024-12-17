@@ -17,51 +17,37 @@ namespace Inventory_Management.Controllers
         }
 
         [HttpPost("GetAll")]
-        public async Task<IActionResult> GetAll([FromForm] DataTableRequestDTO request)
+        public async Task<IActionResult> GetAll()
         {
-            string searchValue =
-                request.Search["value"] ?? "";
-
-            string columnIndexString =
-                request.Order.FirstOrDefault()?["column"] ?? "0";
-
-            int columnIndex =
-                int.Parse(columnIndexString);
-
-            string sortColumn =
-                request.Columns
-                    .ElementAtOrDefault(columnIndex)?
-                    ["data"] ?? "";
-
-            string sortDirection =
-                request.Order.FirstOrDefault()?["dir"] ?? "";
+            string draw = Request.Form["draw"];
+            int start = Convert.ToInt32(Request.Form["start"]);
+            int length = Convert.ToInt32(Request.Form["length"]);
+            string search = Request.Form["search[value]"];
+            string sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"] + "][data]"];
+            string sortDirection = Request.Form["order[0][dir]"];
 
             var data = await _productService.GetAll();
+
             int recordsTotal = data.Count;
 
-            if (!string.IsNullOrEmpty(searchValue))
+            if (!string.IsNullOrEmpty(search))
             {
                 data = data.Where(x =>
-                    (x.Name != null && x.Name.ToLower().Contains(searchValue.ToLower())) ||
-                    (x.Sku != null && x.Sku.ToLower().Contains(searchValue.ToLower()))
+                (x.Name != null && x.Name.ToLower().Contains(search.ToLower()))
                 ).ToList();
             }
 
             int recordsFiltered = data.Count;
 
-            if (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortDirection))
+            //Sorting
+            if (!string.IsNullOrEmpty(sortColumn))
             {
-                data = data.AsQueryable()
-                    .OrderBy($"{sortColumn} {sortDirection}")
-                    .ToList();
+                data = data.AsQueryable().OrderBy(sortColumn + " " + sortDirection).ToList();
             }
-
-            data = data.Skip(request.Start).Take(request.Length).ToList();
-
-            return Ok(new { request.Draw, recordsTotal, recordsFiltered, data });
+            //Paging
+            data = data.Skip(start).Take(length).ToList();
+            return Ok(new { draw, recordsTotal, recordsFiltered, data = data });
         }
-
-
 
         [HttpGet("GetById/{Id}")]
         public async Task<IActionResult> GetById(long Id)
@@ -88,7 +74,7 @@ namespace Inventory_Management.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(Product input)
         {
-            input.Updated_at = DateTime.Now;
+            
             await _productService.Update(input);
             return Ok();
         }

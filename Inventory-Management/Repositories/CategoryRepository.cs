@@ -20,49 +20,88 @@ namespace Inventory_Management.Repositories
 
         public async Task Create(Category input)
         {
-            input.Created_at = DateTime.Now;
-            input.Updated_at = DateTime.Now;
-            _db.Categories.Add(input);
-            await _db.SaveChangesAsync();
+            try
+            {
+                input.Created_at = DateTime.Now;
+                input.Updated_at = DateTime.Now;
+                _db.Categories.Add(input);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+
+            }
+            
         }
 
-        public async Task<List<Category>> GetAll()
+        public async Task<List<Category>?> GetAll()
         {
-            return await _db.Categories.ToListAsync();
+            try
+            {
+                return await _db.Categories.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+            
         }
 
-        public async Task<Category> GetById(long id)
+        public async Task<Category?> GetById(long id)
         {
-            return await _db.Categories
+            try
+            {
+                return await _db.Categories
                 .Where(c => c.Id == id)
                 .FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            
         }
 
         public async Task Delete(int id)
         {
-            Category data = await GetById(id);
+
+            Category? data = await GetById(id);
             if (data == null)
             {
-                return;
+                return; 
             }
 
-            _db.Categories.Remove(data);
-            await _db.SaveChangesAsync();
+            var executionStrategy = _db.Database.CreateExecutionStrategy();
 
-            var productCategories = await _productCategoryService.GetAllByCategory(id);
-            if (productCategories != null)
+            await executionStrategy.ExecuteAsync(async () =>
             {
-                var productIds = productCategories.Select(i => i.ProductId).ToList();
-                foreach (var productId in productIds)
+                using (var transaction = _db.Database.BeginTransaction())
                 {
-                    var product = await _productService.GetById(productId);
-                    if (product != null)
+                    try
                     {
-                        await _productService.Delete(productId);
+                        _db.Categories.Remove(data);
+                        await _db.SaveChangesAsync();
+
+                        var productCategories = await _productCategoryService.GetAllByCategory(id);
+                        if (productCategories != null)
+                        {
+                            foreach (var productCategory in productCategories)
+                            {
+                                _db.ProductCategories.Remove(productCategory);
+                            }
+                            await _db.SaveChangesAsync();  
+                        }
+                        await transaction.CommitAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
                     }
                 }
-            }
+            });
         }
+
 
         public async Task Update(Category input)
         {

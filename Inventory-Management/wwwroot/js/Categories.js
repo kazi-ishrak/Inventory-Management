@@ -69,6 +69,23 @@ function RowEdit(rowid) {
 
     });
 }
+
+function RowDelete(rowid) {
+
+    $.ajax({
+        url: `/Category/Delete?id=${rowid}`,
+        method: 'DELETE',
+        contentType: 'application/json',
+        success: function (data) {
+            alert("Category successfully Deleted.");
+            $('#DataTable_Categories').DataTable().ajax.reload(null, false);
+        },
+
+    });
+}
+
+
+
 function HandleUpdateFormSubmit(e) {
     e.preventDefault();  // Prevent the default form submission
     var now = new Date();
@@ -138,9 +155,8 @@ function AddProduct(formData) {
             console.log("API response:", response);
             alert("Category successfully Added.");
             $('#addCategoryModal').modal('hide');
-
             $('#DataTable_Categories').DataTable().ajax.reload(null, false);
-            clearFormFields();
+
         },
         error: function (xhr, status, error) {
             console.error("Error adding Category:", xhr.responseText);
