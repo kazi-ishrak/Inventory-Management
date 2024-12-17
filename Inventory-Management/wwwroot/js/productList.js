@@ -1,69 +1,51 @@
 ﻿$(function () {
-
     $('#DataTable_Products').DataTable({
-        "processing": true,
-        "language": {
-            "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw text-primary"></i><span class="sr-only">Loading...</span>'
+        processing: true,
+        language: {
+            processing: '<i class="fa fa-spinner fa-spin fa-2x fa-fw text-primary"></i><span class="sr-only">Loading...</span>'
         },
-        "serverSide": true,
-        "order": [5, "desc"],
-        "responsive": true,
-
-        "ajax": {
-            "url": "/Product/GetAll",
-            "type": "POST",  
-           
+        serverSide: true,
+        order: [[5, "desc"]],
+        responsive: true,
+        ajax: {
+            url: "/Product/GetAll",
+            type: "POST"
         },
-
-        "columns": [
-            { "data": "name", "name": "name" },
-            { "data": "sku", "name": "sku" },
-            { "data": "stock", "name": "stock" },
-            { "data": "price", "name": "price" },
+        columns: [
+            { data: "name", name: "name" },
+            { data: "sku", name: "sku" },
+            { data: "stock", name: "stock" },
+            { data: "price", name: "price" },
             {
-                "data": "categories",
-                "name": "categories",
-                "render": function (data, type, row, meta) {
+                data: "categories",
+                name: "categories",
+                render: function (data) {
                     if (Array.isArray(data) && data.length > 0) {
-                        // Create a bullet point list of category names
-                        let categoryList = "<ul style='padding-left: 20px; margin: 0;'>";
-                        data.forEach(category => {
-                            categoryList += `<li>${category.name}</li>`;
-                        });
-                        categoryList += "</ul>";
-                        return categoryList;
+                        return data.map(category => `<li>${category.name}</li>`).join('');
                     }
                     return "<span>No Category</span>";
                 }
             },
-
             {
-                "data": "created_at", "orderable": true,
-                "render": function (data, type, row, meta) {
-                    return formatDatetime(data);
-                },
+                data: "created_at",
+                render: formatDatetime
             },
             {
-                "data": "updated_at", "orderable": true,
-                "render": function (data, type, row, meta) {
-                    return formatDatetime(data);
-                },
+                data: "updated_at",
+                render: formatDatetime
             },
             {
-                "data": null,
-                "width": "10%",
-                "render": function (data, type, row, meta) {
-                    return '<a href="#" onclick="RowEdit(' + row.id + ')" class="btn btn-outline-light btn-sm text-primary"> <i class="fa fa-pencil text-warning" aria-hidden="true"></i></a>' +
-                        ' <a href="#" onclick="RowDelete(' + row.id + ')" class="btn btn-outline-light btn-sm text-danger"> <i class="fa fa-trash text-danger" aria-hidden="true"></i></a>';
+                data: null,
+                width: "10%",
+                render: function (data, type, row) {
+                    return `<a href="#" onclick="RowEdit(${row.id})" class="btn btn-outline-light btn-sm text-primary"><i class="fa fa-pencil text-warning"></i></a>
+                            <a href="#" onclick="RowDelete(${row.id})" class="btn btn-outline-light btn-sm text-danger"><i class="fa fa-trash text-danger"></i></a>`;
                 }
-            },
-
+            }
         ],
-
-        select: true,
-        "columnDefs": [
-            { "className": "dt-center", "targets": "_all" }
-        ],
+        columnDefs: [
+            { className: "dt-center", targets: "_all" }
+        ]
     });
 });
 
@@ -71,161 +53,99 @@ $('#openModalButton').on('click', function () {
     $('#addProductModal').modal('show');
 });
 
-$('#submitProductButton').on('click', HandleFormSubmit);
-$('#updateProjectButton').on('click', HandleUpdateFromSubmit);
-function RowEdit(rowid) {
-
+$('#submitProductButton').on('click', function (e) {
+    e.preventDefault();
+    const formData = {
+        id: 0,
+        name: $('#productName').val(),
+        sku: $('#sku').val(),
+        stock: parseInt($('#stock').val()),
+        price: parseFloat($('#price').val()),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    };
     $.ajax({
-        url: `Product/GetById/${rowid}`,
-        method: 'GET',
-        contentType: 'application/json',
+        url: "http://localhost:5217/Product/Create",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(formData),
+        success: function () {
+            alert("Product created successfully");
+            $('#addProductModal').modal('hide');
+            $('#DataTable_Products').DataTable().ajax.reload();
+        },
+        error: function () {
+            alert("Error creating product");
+        }
+    });
+});
 
+function RowEdit(id) {
+    $.ajax({
+        url: `Product/GetById/${id}`,
+        method: "GET",
         success: function (data) {
-            console.log(data);
-
-
+            $('#productIdHidden').val(data.id);
             $('#productNameUpdate').val(data.name);
+            $('#skuUpdate').val(data.sku); // Ensure SKU is populated
             $('#stockUpdate').val(data.stock);
             $('#priceUpdate').val(data.price);
-            
+            $('#created_atHidden').val(data.created_at); // Store created_at for later use
+            $('#updated_atHidden').val(data.updated_at); // Store updated_at for later use
             $('#rowEditModal').modal('show');
-
-        },
-
+        }
     });
 }
-function HandleUpdateFromSubmit(e) {
+
+$('#updateProductButton').on('click', function (e) {
     e.preventDefault();
-    var updateFormData = {
-        id: $('#projectIdHidden').val().toString(),
-        project_id: $('#projectIdUpdate').val().toString(),
-        type_id: $('#projectTypeIdUpdate').val(),
-        code: $('#projectCodeUpdate').val(),
-        name: $('#projectNameUpdate').val(),
-        organization: $('#organizationUpdate').val(),
-        api_token: $('#apiTokenUpdate').val(),
-        hrm_identifier: $('#hrmEnabledUpdate').val() === 'Yes'
+
+    const formData = {
+        id: parseInt($('#productIdHidden').val()),
+        name: $('#productNameUpdate').val(),
+        sku: $('#skuUpdate').val(), // SKU will be included in the request
+        stock: parseInt($('#stockUpdate').val()),
+        price: parseFloat($('#priceUpdate').val()),
+        created_at: $('#created_atHidden').val(), // Include created_at from hidden field
+        updated_at: new Date().toISOString() // Set updated_at to current timestamp
     };
-    if (!updateFormData.project_id || !updateFormData.name || !updateFormData.api_token || !updateFormData.type_id) {
-        alert('Please fill in all required fields.');
-        $('#projectIdUpdate').addClass('required-field');
-        $('#apiTokenUpdate').addClass('required-field');
-        $('#projectNameUpdate').addClass('required-field');
-        $('#projectTypeIdUpdate').addClass('required-field');
-        return;
-    }
-    UpdateProjectData(updateFormData);
-}
 
-
-function UpdateProjectData(formData) {
     $.ajax({
-        url: '/api/Projects/update',
-
-        method: 'POST',
-        contentType: 'application/json',
+        url: "http://localhost:5217/Product/Update",
+        method: "PUT",
+        contentType: "application/json",
         data: JSON.stringify(formData),
-        success: function (response) {
-            alert("Project successfully Updated.");
+        success: function () {
+            alert("Product updated successfully");
             $('#rowEditModal').modal('hide');
-            $('#DataTable_Projects').DataTable().ajax.reload(null, false);
-            console.log("API response:", response);
+            $('#DataTable_Products').DataTable().ajax.reload();
         },
-        error: function (xhr, status, error) {
-            console.error("Error Updating project:", xhr.responseText);
-            alert("Failed to Update project: " + xhr.responseText);
+        error: function () {
+            alert("Error updating product");
         }
     });
-}
-function HandleFormSubmit(e) {
-    e.preventDefault();
-    var formdata = {
-        project_id: $('#projectId').val().toString(),
-        type_id: $('#projectTypeSelect').val().toString(),
-        code: $('#projectCode').val(),
-        name: $('#projectName').val(),
-        organization: $('#organization').val(),
-        api_token: $('#apiToken').val(),
-        hrm_identifier: $('#hrmEnabled').val() === 'Yes'
-    };
-    if (!formdata.project_id || !formdata.name || !formdata.api_token || !formdata.type_id) {
-        alert('Please fill in all required fields.');
-        $('#projectId').addClass('required-field');
-        $('#apiToken').addClass('required-field');
-        $('#projectName').addClass('required-field');
-        $('#projectTypeSelect').addClass('required-field');
-        console.log(formdata.type_id);
-        return;
+});
+
+
+
+function RowDelete(id) {
+    if (confirm("Are you sure you want to delete this product?")) {
+        $.ajax({
+            url: `http://localhost:5217/Product/Delete?id=${id}`,
+            method: "DELETE",
+            success: function () {
+                alert("Product deleted successfully");
+                $('#DataTable_Products').DataTable().ajax.reload();
+            },
+            error: function () {
+                alert("Error deleting product");
+            }
+        });
     }
-
-    InsertAProject(formdata);
 }
-
-function HandleFormSubmit(e) {
-    e.preventDefault();  // Prevent the default form submission
-
-    var formdata = {
-        productName: $('#productName').val(),
-        stock: $('#stock').val(),
-        price: $('#price').val()
-    };
-
-    // Validate stock to be a positive integer
-    if (!Number.isInteger(Number(formdata.stock)) || Number(formdata.stock) < 1) {
-        alert('Please enter a valid stock number (positive integer).');
-        $('#stock').addClass('required-field');  // Highlight the field if invalid
-        return false;
-    }
-
-    // Validate price to be a positive decimal
-    if (Number(formdata.price) <= 0) {
-        alert('Please enter a valid price (positive number).');
-        $('#price').addClass('required-field');  // Highlight the field if invalid
-        return false;
-    }
-
-    // Assuming all validations are passed
-    AddProduct(formdata); // A function to handle the AJAX request or form submission
-}
-
-
-
-function InsertAProject(formData) {
-
-    $.ajax({
-        url: '/api/Projects/insert',
-
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(formData),
-        success: function (response) {
-            console.log("API response:", response);
-            alert("Project successfully Created.");
-            $('#addProjectModal').modal('hide');
-
-            $('#DataTable_Projects').DataTable().ajax.reload(null, false);
-            clearFormFields();
-        },
-        error: function (xhr, status, error) {
-            console.error("Error inserting project:", xhr.responseText);
-            alert("Failed to add project: " + xhr.responseText);
-        }
-    });
-}
-
-
-
 
 function formatDatetime(data) {
-    var dateObj = new Date(data);
-    var day = ("0" + dateObj.getDate()).slice(-2);
-    var month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
-    var year = dateObj.getFullYear().toString().slice(-2);
-    var hours = ("0" + dateObj.getHours()).slice(-2);
-    var ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    var minutes = ("0" + dateObj.getMinutes()).slice(-2);
-    var seconds = ("0" + dateObj.getSeconds()).slice(-2);
-    return day + "." + month + "." + year + " " + hours + ":" + minutes + ":" + seconds + " " + ampm;
+    const date = new Date(data);
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    return date.toLocaleDateString('en-US', options);
 }
