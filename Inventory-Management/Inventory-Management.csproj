@@ -33,4 +33,11 @@
     <None Include="Views\Home\AuditLogs.cshtml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\js\AuditLogs.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
