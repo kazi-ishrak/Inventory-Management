@@ -16,6 +16,13 @@ namespace Inventory_Management.Controllers
             _categoryService = categoryService;
         }
 
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAllV1()
+        {
+            var data = await _categoryService.GetAll();
+            return Ok(data);
+        }
+
         [HttpPost("GetAll")]
         public async Task<IActionResult> GetAll()
         {
