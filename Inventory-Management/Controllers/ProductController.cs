@@ -67,8 +67,8 @@ namespace Inventory_Management.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(Product input)
         {
-            await _productService.Create(input);
-            return Ok();
+            var data = await _productService.Create(input);
+            return Ok(data);
         }
 
         [HttpPut("Update")]

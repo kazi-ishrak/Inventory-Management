@@ -17,15 +17,19 @@ namespace Inventory_Management.Repositories
             _auditLogService = auditLogService;
         }
 
-        public async Task Create(Product input)
+        public async Task<Product?> Create(Product input)
         {
-            if(input == null || input.Stock < 0)
+            if (input == null || input.Stock < 0)
             {
-                return;
+                return null;
             }
+
             _db.Products.Add(input);
             await _db.SaveChangesAsync();
+
+            return input;
         }
+
 
         public async Task<List<ProductDto>> GetAll()
         {
