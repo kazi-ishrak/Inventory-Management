@@ -6,7 +6,7 @@
             "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw text-primary"></i><span class="sr-only">Loading...</span>'
         },
         "serverSide": true,
-        "order": [0, "desc"],
+        "order": [5, "desc"],
         "responsive": true,
 
         "ajax": {
@@ -20,7 +20,23 @@
             { "data": "sku", "name": "sku" },
             { "data": "stock", "name": "stock" },
             { "data": "price", "name": "price" },
-            { "data": "price", "name": "price" },
+            {
+                "data": "categories",
+                "name": "categories",
+                "render": function (data, type, row, meta) {
+                    if (Array.isArray(data) && data.length > 0) {
+                        // Create a bullet point list of category names
+                        let categoryList = "<ul style='padding-left: 20px; margin: 0;'>";
+                        data.forEach(category => {
+                            categoryList += `<li>${category.name}</li>`;
+                        });
+                        categoryList += "</ul>";
+                        return categoryList;
+                    }
+                    return "<span>No Category</span>";
+                }
+            },
+
             {
                 "data": "created_at", "orderable": true,
                 "render": function (data, type, row, meta) {
